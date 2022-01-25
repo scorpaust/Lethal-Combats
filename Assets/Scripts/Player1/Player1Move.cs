@@ -7,6 +7,12 @@ public class Player1Move : MonoBehaviour
     [SerializeField]
     private float walkSpeed = 0.05f;
 
+    [SerializeField]
+    private GameObject player1;
+
+    [SerializeField]
+    private GameObject opponent;
+
     private Animator anim;
 
     private bool isJumping = false;
@@ -17,10 +23,18 @@ public class Player1Move : MonoBehaviour
 
     private AnimatorStateInfo Player1Layer0;
 
+    private Vector3 opPosition;
+
+    private bool facingLeft = false;
+
+    private bool facingRight = true;
+
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponentInChildren<Animator>();
+
+        StartCoroutine(FaceRight());
     }
 
     // Update is called once per frame
@@ -31,8 +45,10 @@ public class Player1Move : MonoBehaviour
 
     private void Move()
 	{
+        // Listen to the animator
         Player1Layer0 = anim.GetCurrentAnimatorStateInfo(0);
 
+        // Cannot exit screen
         ClampPositionToScreen();
 
         // Walking left and right
@@ -56,6 +72,8 @@ public class Player1Move : MonoBehaviour
             anim.SetBool("Backward", false);
             anim.SetBool("Forward", false);
         }
+
+        FaceOpponent();
 
         //Jumping and crouching
         if (Input.GetAxis("Vertical") > 0)
@@ -105,6 +123,60 @@ public class Player1Move : MonoBehaviour
 
             canWalkLeft = true;
 		}
+    }
 
+    private Vector3 GetOpponentPosition()
+	{
+        return opponent.transform.position;
+	}
+
+    private void FaceOpponent()
+	{
+        opPosition = GetOpponentPosition();
+
+        // Flip around to face opponent
+        if (opPosition.x > player1.transform.position.x)
+		{
+            StartCoroutine(FaceLeft());
+		}
+
+        // Flip around to face opponent
+        if (opPosition.x < transform.position.x)
+        {
+            StartCoroutine(FaceRight());
+        }
+    }
+
+    private IEnumerator FaceLeft()
+	{
+        if (facingLeft)
+		{
+            facingLeft = false;
+
+            facingRight = true;
+
+            yield return new WaitForSeconds(0.15f);
+
+            player1.transform.Rotate(0f, -180f, 0f);
+
+            anim.SetLayerWeight(1, 0);
+        }
+        
+	}
+
+    private IEnumerator FaceRight()
+    {
+        if (facingRight)
+        {
+            facingRight = false;
+
+            facingLeft = true;
+
+            yield return new WaitForSeconds(0.15f);
+
+            player1.transform.Rotate(0f, -180f, 0f);
+
+            anim.SetLayerWeight(1, 1);
+        }
     }
 }
