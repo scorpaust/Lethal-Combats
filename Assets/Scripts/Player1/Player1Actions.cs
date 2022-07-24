@@ -26,6 +26,16 @@ public class Player1Actions : MonoBehaviour
 		{
             anim.SetTrigger("LightPunch");
 		}
+
+        if (Input.GetButtonDown("Fire2"))
+        {
+            anim.SetTrigger("HeavyPunch");
+        }
+
+        if (Input.GetButtonDown("Fire3"))
+        {
+            anim.SetTrigger("LightKick");
+        }
     }
 
     public void JumpUp()
